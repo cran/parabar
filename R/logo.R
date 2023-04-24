@@ -4,14 +4,23 @@ make_logo <- function(template = "./inst/assets/logo/parabar-logo.txt", version 
     # Load the ASCII logo.
     logo <- readLines(template)
 
+    # Create a text connection.
+    connection <- textConnection(NULL, open = "w", local = TRUE)
+
+    # Close the connection on exit.
+    on.exit({
+        # Close.
+        close(connection)
+    })
+
     # Redirect console output.
-    sink("/dev/null")
+    sink(connection, type = "output")
 
     # Parse the logo.
     logo <- dput(logo)
 
     # Remove output redirection.
-    sink()
+    sink(NULL)
 
     # Update versioning.
     logo <- gsub("{{major}}", version[1], logo, perl = TRUE)
@@ -41,7 +50,7 @@ make_logo <- function(template = "./inst/assets/logo/parabar-logo.txt", version 
 #' @seealso [parabar::make_logo()]
 #'
 #' @export
-LOGO = ". . . . . . . . . . . . . . . . . . . . . . . . . . .\n.                              _             v0.x.x .\n.                             | |                   .\n.   _ __    __ _  _ __   __ _ | |__    __ _  _ __   .\n.  | '_ \\  / _` || '__| / _` || '_ \\  / _` || '__|  .\n.  | |_) || (_| || |   | (_| || |_) || (_| || |     .\n.  | .__/  \\____||_|    \\____||____/  \\____||_|     .\n.  | |                                              .\n.  |_|                                              .\n.                                                   .\n. . . . . . . . . . . . . . . . . . . . . . . . . . .\n.                         .                         .\n.        https://parabar.mihaiconstantin.com        .\n.                         .                         .\n. . . . . . . . . . . . . . . . . . . . . . . . . . ."
+LOGO = ". . . . . . . . . . . . . . . . . . . . . . . . . . .\n.                              _             v1.x.x .\n.                             | |                   .\n.   _ __    __ _  _ __   __ _ | |__    __ _  _ __   .\n.  | '_ \\  / _` || '__| / _` || '_ \\  / _` || '__|  .\n.  | |_) || (_| || |   | (_| || |_) || (_| || |     .\n.  | .__/  \\____||_|    \\____||____/  \\____||_|     .\n.  | |                                              .\n.  |_|                                              .\n.                                                   .\n. . . . . . . . . . . . . . . . . . . . . . . . . . .\n.                         .                         .\n.        https://parabar.mihaiconstantin.com        .\n.                         .                         .\n. . . . . . . . . . . . . . . . . . . . . . . . . . ."
 
 # Add package logo class.
 class(LOGO) <- "parabar"

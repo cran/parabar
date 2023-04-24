@@ -13,10 +13,14 @@
 <!-- badges: start -->
 <p align="center">
     <a href="https://www.repostatus.org/#active"><img src="https://www.repostatus.org/badges/latest/active.svg" alt="Repository status"/></a>
-    <a href="https://github.com/mihaiconstantin/parabar/releases"><img src="https://img.shields.io/github/v/release/mihaiconstantin/parabar?display_name=tag&sort=semver"/></a>
-    <a href="https://github.com/mihaiconstantin/parabar"><img src="https://www.r-pkg.org/badges/version/parabar" alt="CRAN version"/></a>
-    <a href="https://github.com/mihaiconstantin/parabar"><img src="https://cranlogs.r-pkg.org/badges/grand-total/parabar" alt="CRAN RStudio mirror downloads"/></a>
+    <a href="https://github.com/mihaiconstantin/parabar/releases"><img src="https://img.shields.io/github/v/release/mihaiconstantin/parabar?display_name=tag&sort=semver" alt="GitHub version"/></a>
+    <a href="https://cran.r-project.org/package=parabar "><img src="https://www.r-pkg.org/badges/version/parabar" alt="CRAN version"/></a>
+    <a href="https://www.r-pkg.org/pkg/parabar"><img src="https://cranlogs.r-pkg.org/badges/grand-total/parabar" alt="CRAN RStudio mirror downloads"/></a>
+    <a href="https://app.codecov.io/gh/mihaiconstantin/parabar"><img src="https://codecov.io/gh/mihaiconstantin/parabar/branch/main/graph/badge.svg?token=1NZWRKQH1T" alt="Code coverage"/></a>
     <a href="https://github.com/mihaiconstantin/parabar/actions"><img src="https://github.com/mihaiconstantin/parabar/workflows/R-CMD-check/badge.svg" alt="R-CMD-check" /></a>
+    <a href="https://cran.r-project.org/web/checks/check_results_parabar.html"><img src="https://badges.cranchecks.info/worst/parabar.svg" alt="CRAN checks"/></a>
+    <a href="https://parabar.mihaiconstantin.com"><img src="https://img.shields.io/badge/docs-website-brightgreen" alt="Documentation website"/></a>
+    <a href="https://raw.githubusercontent.com/mihaiconstantin/parabar/main/inst/design/parabar-design.drawio.svg"><img src="https://img.shields.io/badge/design-diagram-brightgreen" alt="Software design diagram"/></a>
 </p>
 <!-- badges: end -->
 
@@ -31,11 +35,22 @@ in parallel in an interactive `R` session and track the execution progress, and
 processing in their packages.
 
 ## Installation
-We are planning to submit parabar soon to `CRAN`. In the meantime, you can
-install the latest development version from GitHub using the following command:
+
+You can install `parabar` directly from `CRAN` using the following command:
 
 ```r
-# Install the package.
+# Install the package from `CRAN`.
+install.packages("parabar")
+
+# Load the package.
+library(parabar)
+```
+
+Alternatively, you can also install the latest development version from `GitHub`
+via:
+
+```r
+# Install the package from `GitHub`.
 remotes::install_github("mihaiconstantin/parabar")
 
 # Load the package.
@@ -292,7 +307,7 @@ A **`context`** represents the specific conditions in which a backend object
 operates. The default context class (i.e., `?Context`) simply forwards the call
 to the corresponding backend method. However, a more complex context can augment
 the operation before forwarding the call to the backend. One example of a
-complex context is the `?ProgressDecorator` class. This class extends the
+complex context is the `?ProgressTrackingContext` class. This class extends the
 regular `?Context` class and decorates the backend `sapply` operation to log the
 progress after each task execution and display a progress bar.
 
@@ -309,8 +324,8 @@ The following are the main classes provided by
 - `BackendFactory`: Factory for creating `Backend` objects.
 - `Context`: Default context for executing backend operations without
   interference.
-- `ProgressDecorator`: Context for decorating the `sapply` operation to track
-  and display the progress.
+- `ProgressTrackingContext`: Context for decorating the `sapply` operation to
+  track and display the progress.
 - `ContextFactory`: Factory for creating `Context` objects.
 
 Additionally, [`parabar`](https://parabar.mihaiconstantin.com) also provides
@@ -405,9 +420,9 @@ context$set_backend(backend)
 The `?Context` class (i.e., and it's subclasses) implements the `?Service`
 interface, which means that we can use it to execute backend operations.
 
-Since we are using the `?ProgressDecorator` context, we also need to register a
-`?Bar` instance with the context. First, let's obtain a `?Bar` instance from the
-`?BarFactory`.
+Since we are using the `?ProgressTrackingContext` context, we also need to
+register a `?Bar` instance with the context. First, let's obtain a `?Bar`
+instance from the `?BarFactory`.
 
 ```r
 # Create a bar factory.
@@ -471,10 +486,11 @@ Check out the UML diagram below for a quick overview of the package design.
 
 ## Contributing
 - Any contributions are welcome and greatly appreciated. Please open a [pull
-  request](https://github.com/mihaiconstantin/parabar/pulls) on GitHub.
+  request](https://github.com/mihaiconstantin/parabar/pulls) on `GitHub`.
 - To report bugs, or request new features, please open an
-  [issue](https://github.com/mihaiconstantin/parabar/issues) on GitHub.
+  [issue](https://github.com/mihaiconstantin/parabar/issues) on `GitHub`.
 
 ## License
-The code in this repository is licensed under the [MIT
-license](https://opensource.org/license/mit/).
+- The package source code in this repository is licensed under the [MIT
+  license](https://opensource.org/license/mit/).
+- <p xmlns:cc="https://creativecommons.org/ns#" xmlns:dct="https://purl.org/dc/terms/"><a property="dct:title" rel="cc:attributionURL" href="https://parabar.mihaiconstantin.com">The documentation, vignettes, and other website materials</a> by <a rel="cc:attributionURL dct:creator" property="cc:attributionName" href="https://mihaiconstantin.com">Mihai Constantin</a> are licensed under <a href="https://creativecommons.org/licenses/by/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">CC BY 4.0<img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1"></a>.</p>

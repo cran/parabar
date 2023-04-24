@@ -64,7 +64,7 @@
 #'
 #' # Trying to get the output immediately will throw an error, indicating that the
 #' # task is still running.
-#' \dontrun{backend$get_output()}
+#' try(backend$get_output())
 #'
 #' # However, we can block the main process and wait for the task to complete
 #' # before fetching the results.
@@ -84,7 +84,7 @@
 #'
 #' @seealso
 #' [`parabar::Service`], [`parabar::Backend`], [`parabar::SyncBackend`],
-#' [`parabar::ProgressDecorator`], and [`parabar::TaskState`].
+#' [`parabar::ProgressTrackingContext`], and [`parabar::TaskState`].
 #'
 #' @export
 AsyncBackend <- R6::R6Class("AsyncBackend",
@@ -103,6 +103,15 @@ AsyncBackend <- R6::R6Class("AsyncBackend",
             }, args = list(
                 specification$cores, specification$type
             ))
+        },
+
+        # Stop the cluster existing in the separate `R` session.
+        .close_cluster = function() {
+            # Send the function.
+            private$.cluster$run(function() {
+                # Stop the cluster.
+                parallel::stopCluster(cluster)
+            })
         },
 
         # Start a cluster in a separate `R` session.
@@ -134,11 +143,8 @@ AsyncBackend <- R6::R6Class("AsyncBackend",
                 Exception$cluster_not_active()
             }
 
-            # Stop the cluster existing in the separate `R` session.
-            private$.cluster$run(function() {
-                # Stop the cluster.
-                parallel::stopCluster(cluster)
-            })
+            # Terminate the cluster in the separate `R` session.
+            private$.close_cluster()
 
             # Terminate the separate `R` session.
             private$.cluster$close()

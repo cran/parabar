@@ -1,3 +1,67 @@
+# parabar 1.0.3
+
+## Fixed
+- Fixed moved `URL` in package `NEWS.md` per `CRAN` request.
+
+# parabar 1.0.2
+
+## Fixed
+- Fixed `URLs` in package documentation per `CRAN` request.
+
+# parabar 1.0.1
+
+## Fixed
+- Update logo version from `v0.x.x` to `v1.x.x`.
+
+# parabar 1.0.0
+
+## Added
+- Add `CC BY 4.0` license for package documentation, vignettes, and website
+  content.
+- Add code coverage `GitHub` workflow via
+  [`codecov`](https://app.codecov.io/gh/mihaiconstantin/parabar) and badge in
+  `README`.
+- Add tests for end-user API and developer API.
+- Add vignette `comparison.Rmd` to compare `parabar` to the `pbapply` package,
+  and provide rough benchmarks. The `comparison.Rmd` vignette is locally build
+  from the `comparison.Rmd.orig` file (i.e., see [this
+  resource](https://ropensci.org/blog/2019/12/08/precompute-vignettes/) for more
+  information).
+- Add active biding `Options$progress_log_path` to handle generation of
+  temporary files for tracking the execution progress of tasks ran in parallel.
+  Using a custom path (e.g., for debugging) is also possible by setting this
+  active binding to a desired path.
+
+## Changed
+- Refactor `Specification` for testing purposes.
+- Replace `\dontrun{}` statements in examples with `try()` calls.
+- Update example for `Options` class to feature the `progress_log_path` active
+  binding.
+- Update progress logging injection approach in `.decorate` method of
+  `ProgressTrackingContext` to use `bquote` instead of `substitute`.
+- **Breaking**. Rename class `ProgressDecorator` to `ProgressTrackingContext` to
+  be more consistent with the idea of *backends* that run in *contexts*.
+- Add `...` optional arguments to signature of `get_output` method in `Service`
+  interface.
+- Update private method `.make_log` of `ProgressDecorator` to use the
+  `progress_log_path` option.
+- Update `UML` diagram to include missing classes and changed methods. Also
+  updated the corresponding diagram figure in the package documentation.
+
+## Fixed
+- Update `Specification` to prevent incompatible cluster types (e.g., `FORK`) on
+  `Windows` platforms. For such cases, a warning is issues and the cluster type
+  defaults to `PSOCK`.
+- Ensure `make_logo` can be ran on all platforms.
+
+# parabar 0.10.2
+
+## Changed
+- Update `README` to add `CRAN` installation instructions and new badges.
+
+## Fixed
+- Corrected expression for all files and folders in `.Rbuildignore.
+
 # parabar 0.10.1
 
 ## Changed
