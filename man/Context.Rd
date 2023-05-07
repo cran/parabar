@@ -101,6 +101,8 @@ context.}
 \item \href{#method-Context-export}{\code{Context$export()}}
 \item \href{#method-Context-evaluate}{\code{Context$evaluate()}}
 \item \href{#method-Context-sapply}{\code{Context$sapply()}}
+\item \href{#method-Context-lapply}{\code{Context$lapply()}}
+\item \href{#method-Context-apply}{\code{Context$apply()}}
 \item \href{#method-Context-get_output}{\code{Context$get_output()}}
 \item \href{#method-Context-clone}{\code{Context$clone()}}
 }
@@ -206,7 +208,7 @@ Export variables from a given environment to the backend.
 \item{\code{variables}}{A character vector of variable names to export.}
 
 \item{\code{environment}}{An environment object from which to export the
-variables.}
+variables. Defaults to the parent frame.}
 }
 \if{html}{\out{</div>}}
 }
@@ -246,10 +248,69 @@ Run a task on the backend akin to \code{\link[parallel:clusterApply]{parallel::p
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{x}}{A vector (i.e., usually of integers) to pass to the \code{fun}
-function.}
+\item{\code{x}}{An atomic vector or list to pass to the \code{fun} function.}
 
 \item{\code{fun}}{A function to apply to each element of \code{x}.}
+
+\item{\code{...}}{Additional arguments to pass to the \code{fun} function.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+This method returns void. The output of the task execution must be
+stored in the private field \code{.output} on the \code{\link{Backend}}
+abstract class, and is accessible via the \code{get_output()} method.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Context-lapply"></a>}}
+\if{latex}{\out{\hypertarget{method-Context-lapply}{}}}
+\subsection{Method \code{lapply()}}{
+Run a task on the backend akin to \code{\link[parallel:clusterApply]{parallel::parLapply()}}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Context$lapply(x, fun, ...)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{x}}{An atomic vector or list to pass to the \code{fun} function.}
+
+\item{\code{fun}}{A function to apply to each element of \code{x}.}
+
+\item{\code{...}}{Additional arguments to pass to the \code{fun} function.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+This method returns void. The output of the task execution must be
+stored in the private field \code{.output} on the \code{\link{Backend}}
+abstract class, and is accessible via the \code{get_output()} method.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Context-apply"></a>}}
+\if{latex}{\out{\hypertarget{method-Context-apply}{}}}
+\subsection{Method \code{apply()}}{
+Run a task on the backend akin to \code{\link[parallel:clusterApply]{parallel::parApply()}}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Context$apply(x, margin, fun, ...)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{x}}{An array to pass to the \code{fun} function.}
+
+\item{\code{margin}}{A numeric vector indicating the dimensions of \code{x} the
+\code{fun} function should be applied over. For example, for a matrix,
+\code{margin = 1} indicates applying \code{fun} rows-wise, \code{margin = 2}
+indicates applying \code{fun} columns-wise, and \code{margin = c(1, 2)}
+indicates applying \code{fun} element-wise. Named dimensions are also
+possible depending on \code{x}. See \code{\link[parallel:clusterApply]{parallel::parApply()}} and
+\code{\link[base:apply]{base::apply()}} for more details.}
+
+\item{\code{fun}}{A function to apply to \code{x} according to the \code{margin}.}
 
 \item{\code{...}}{Additional arguments to pass to the \code{fun} function.}
 }
@@ -288,8 +349,10 @@ task.
 }
 
 \subsection{Returns}{
-A vector or list of the same length as \code{x} containing the results of
-the \code{fun}. It resembles the format of \code{\link[base:lapply]{base::sapply()}}.
+A vector, matrix, or list of the same length as \code{x}, containing the
+results of the \code{fun}. The output format differs based on the specific
+operation employed. Check out the documentation for the \code{apply}
+operations of \code{\link[parallel:parallel-package]{parallel::parallel}} for more information.
 }
 }
 \if{html}{\out{<hr>}}

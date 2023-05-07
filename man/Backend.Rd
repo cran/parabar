@@ -48,10 +48,12 @@ implementation has an active cluster.}
 \if{html}{\out{
 <details><summary>Inherited methods</summary>
 <ul>
+<li><span class="pkg-link" data-pkg="parabar" data-topic="Service" data-id="apply"><a href='../../parabar/html/Service.html#method-Service-apply'><code>parabar::Service$apply()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="parabar" data-topic="Service" data-id="clear"><a href='../../parabar/html/Service.html#method-Service-clear'><code>parabar::Service$clear()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="parabar" data-topic="Service" data-id="evaluate"><a href='../../parabar/html/Service.html#method-Service-evaluate'><code>parabar::Service$evaluate()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="parabar" data-topic="Service" data-id="export"><a href='../../parabar/html/Service.html#method-Service-export'><code>parabar::Service$export()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="parabar" data-topic="Service" data-id="get_output"><a href='../../parabar/html/Service.html#method-Service-get_output'><code>parabar::Service$get_output()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="parabar" data-topic="Service" data-id="lapply"><a href='../../parabar/html/Service.html#method-Service-lapply'><code>parabar::Service$lapply()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="parabar" data-topic="Service" data-id="peek"><a href='../../parabar/html/Service.html#method-Service-peek'><code>parabar::Service$peek()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="parabar" data-topic="Service" data-id="sapply"><a href='../../parabar/html/Service.html#method-Service-sapply'><code>parabar::Service$sapply()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="parabar" data-topic="Service" data-id="start"><a href='../../parabar/html/Service.html#method-Service-start'><code>parabar::Service$start()</code></a></span></li>

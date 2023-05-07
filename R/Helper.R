@@ -8,10 +8,12 @@
 #'
 #' @format
 #' \describe{
-#'   \item{\code{Helper$get_class_name()}}{Helper for getting the class of a given object.}
-#'   \item{\code{Helper$get_option()}}{Get package option, or corresponding default value.}
-#'   \item{\code{Helper$set_option()}}{Set package option.}
-#'   \item{\code{Helper$check_object_type()}}{Check the type of a given object.}
+#'   \item{\code{Helper$get_class_name(object)}}{Helper for getting the class of a given object.}
+#'   \item{\code{Helper$is_of_class(object, class)}}{Check if an object is of a certain class.}
+#'   \item{\code{Helper$get_option(option)}}{Get package option, or corresponding default value.}
+#'   \item{\code{Helper$set_option(option, value)}}{Set package option.}
+#'   \item{\code{Helper$check_object_type(object, expected_type)}}{Check the type of a given object.}
+#'   \item{\code{Helper$check_array_margins(margins, dimensions)}}{Helper to check array margins for the `Service$apply` operation.}
 #' }
 #'
 #' @export
@@ -22,6 +24,11 @@ Helper <- R6::R6Class("Helper",
 # Helper for getting the class of a given instance.
 Helper$get_class_name <- function(object) {
     return(class(object)[1])
+}
+
+# Helper to check if object is of certain class.
+Helper$is_of_class <- function(object, class) {
+    return(class(object)[1] == class)
 }
 
 # Get package option, or corresponding default value.
@@ -66,5 +73,23 @@ Helper$check_object_type <- function(object, expected_type) {
     if (!inherits(object, expected_type)) {
         # Throw incorrect type error.
         Exception$type_not_assignable(type, expected_type)
+    }
+}
+
+# Helper for checking the array margins provided for the `apply` operation.
+Helper$check_array_margins <- function(margins, dimensions) {
+    # Conditions to ensure the margins are valid.
+    violations <- c(
+        # Ensure all margins are unique.
+        duplicated(margins),
+
+        # Ensure all margins are within the array dimensions.
+        margins > length(dimensions)
+    )
+
+    # If any violations are found.
+    if (any(violations)) {
+        # Throw an error.
+        Exception$array_margins_not_compatible(margins, dimensions)
     }
 }

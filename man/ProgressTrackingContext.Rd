@@ -127,6 +127,8 @@ context$stop()
 \item \href{#method-ProgressTrackingContext-set_bar}{\code{ProgressTrackingContext$set_bar()}}
 \item \href{#method-ProgressTrackingContext-configure_bar}{\code{ProgressTrackingContext$configure_bar()}}
 \item \href{#method-ProgressTrackingContext-sapply}{\code{ProgressTrackingContext$sapply()}}
+\item \href{#method-ProgressTrackingContext-lapply}{\code{ProgressTrackingContext$lapply()}}
+\item \href{#method-ProgressTrackingContext-apply}{\code{ProgressTrackingContext$apply()}}
 \item \href{#method-ProgressTrackingContext-clone}{\code{ProgressTrackingContext$clone()}}
 }
 }
@@ -216,10 +218,70 @@ progress bar.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{x}}{A vector (i.e., usually of integers) to pass to the \code{fun}
-function.}
+\item{\code{x}}{An atomic vector or list to pass to the \code{fun} function.}
 
 \item{\code{fun}}{A function to apply to each element of \code{x}.}
+
+\item{\code{...}}{Additional arguments to pass to the \code{fun} function.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+This method returns void. The output of the task execution must be
+stored in the private field \code{.output} on the \code{\link{Backend}}
+abstract class, and is accessible via the \code{get_output()} method.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-ProgressTrackingContext-lapply"></a>}}
+\if{latex}{\out{\hypertarget{method-ProgressTrackingContext-lapply}{}}}
+\subsection{Method \code{lapply()}}{
+Run a task on the backend akin to \code{\link[parallel:clusterApply]{parallel::parLapply()}}, but with a
+progress bar.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ProgressTrackingContext$lapply(x, fun, ...)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{x}}{An atomic vector or list to pass to the \code{fun} function.}
+
+\item{\code{fun}}{A function to apply to each element of \code{x}.}
+
+\item{\code{...}}{Additional arguments to pass to the \code{fun} function.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+This method returns void. The output of the task execution must be
+stored in the private field \code{.output} on the \code{\link{Backend}}
+abstract class, and is accessible via the \code{get_output()} method.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-ProgressTrackingContext-apply"></a>}}
+\if{latex}{\out{\hypertarget{method-ProgressTrackingContext-apply}{}}}
+\subsection{Method \code{apply()}}{
+Run a task on the backend akin to \code{\link[parallel:clusterApply]{parallel::parApply()}}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ProgressTrackingContext$apply(x, margin, fun, ...)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{x}}{An array to pass to the \code{fun} function.}
+
+\item{\code{margin}}{A numeric vector indicating the dimensions of \code{x} the
+\code{fun} function should be applied over. For example, for a matrix,
+\code{margin = 1} indicates applying \code{fun} rows-wise, \code{margin = 2}
+indicates applying \code{fun} columns-wise, and \code{margin = c(1, 2)}
+indicates applying \code{fun} element-wise. Named dimensions are also
+possible depending on \code{x}. See \code{\link[parallel:clusterApply]{parallel::parApply()}} and
+\code{\link[base:apply]{base::apply()}} for more details.}
+
+\item{\code{fun}}{A function to apply to \code{x} according to the \code{margin}.}
 
 \item{\code{...}}{Additional arguments to pass to the \code{fun} function.}
 }

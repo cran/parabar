@@ -1,3 +1,60 @@
+# parabar 1.1.0
+
+## Added
+- Update implementations of `Service$apply` operation for `Backend` classes to
+  validate the provided `margin` argument before running the parallel operation.
+- Add helper `Helper$check_array_margins` to validate the margins provided to
+  the `Service$apply` operation.
+- Add exception `Exception$array_margins_not_compatible` for using improper
+  margins in the `Service$apply` operation.
+- Add exception `Exception$primitive_as_task_not_allowed` for trying to decorate
+  primitive functions with progress tracking in the `ProgressTrackingContext`
+  class.
+- Add helper `Helper$is_of_class` to check if an object is of a given class.
+- Add optional arguments to the `get_output` operation of `SyncBackend` for
+  consistency.
+- Add more tests to improve coverage.
+- Add implementation for `Service$lapply` and `Service$apply` operations for all
+  classes that implement the `Service` interface.
+- Add `par_lapply` and `par_apply` functions to the user `API`. These functions
+  can be used to run tasks in parallel akin to `parallel::parLapply` and
+  `parallel::parApply`, respectively.
+- Add `UserApiConsumer` `R6` class that provides an opinionated wrapper around
+  the developer `API` of the `parabar` package. All parallel operations (e.g.,
+  `par_sapply` and `par_lapply`) follow more or less the same pattern. The
+  `UserApiConsumer` encapsulates this pattern and makes it easier to extend
+  `parabar` with new parallel functions (e.g., `par_apply`) while avoiding code
+  duplication. The `UserApiConsumer` class can also be used as a standalone
+  class for parallel operations, however, its primary purpose is to be used by
+  the parallel task execution functions in the user `API`.
+
+## Changed
+- Force early evaluation for the `x` argument of task execution functions in
+  `ProgressTrackingContext` class.
+- Update the log file for progress tracking to include `parabar` in file name.
+- Disable warnings for `file.create` in `ProgressTrackingContext` class. This
+  warning is superfluous since the code handles creation failures.
+- Refactor test helpers to avoid code duplication.
+- Update `par_sapply` to use the `UserApiConsumer` class.
+- Update the developer `API` `R6` classes to implement the `lapply` parallel
+  operation.
+
+## Fixed
+- Ensure task execution errors are propagated to the main session in
+  `AsyncBackend`. Closes
+  [#35](https://github.com/mihaiconstantin/parabar/issues/35).
+- Fixed the rendering of `CC BY 4.0` license icons in `README.md` for the
+  package website.
+- Update `.decorate` method of `ProgressTrackingContext` to be more flexible.
+  More specifically, the method will now throw when primitive functions are
+  provided for decoration. The method can now handle both inline functions
+  (i.e., `function(x) x`) and functions that have a body defined in terms of
+  compound expressions (i.e., `function(x) { x }`). Closes
+  [#32](https://github.com/mihaiconstantin/parabar/issues/32).
+- Fix the `export` operation in the `SyncBackend` and `Context` classes to
+  fallback to the parent environment if the argument `environment` is not
+  provided.
+
 # parabar 1.0.3
 
 ## Fixed

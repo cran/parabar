@@ -120,13 +120,22 @@ ProgressTrackingContext <- R6::R6Class("ProgressTrackingContext",
         # Progress bar configuration.
         .bar_config = list(),
 
+        # Validate the type of task provided.
+        .validate_task = function(task) {
+            # If the task is a primitive.
+            if (is.primitive(task)) {
+                # Then throw an exception.
+                Exception$primitive_as_task_not_allowed()
+            }
+        },
+
         # Create a temporary file to log progress from backend tasks.
         .make_log = function() {
             # Get a temporary file name (i.e., OS specific) or a fixed one.
             file_path <- Helper$get_option("progress_log_path")
 
             # Create the temporary file.
-            creation_status <- file.create(file_path)
+            creation_status <- file.create(file_path, showWarnings = FALSE)
 
             # If the file creation failed.
             if (!creation_status) {
@@ -140,21 +149,15 @@ ProgressTrackingContext <- R6::R6Class("ProgressTrackingContext",
 
         # Decorate task function to log the progress after each execution.
         .decorate = function(task, log) {
-            # Determine file log lock path.
-            log_lock_path <- paste0(log, ".lock")
+            # Validate the task function provided.
+            private$.validate_task(task)
 
-            # Get the body of the function to patch.
-            fun_body <- body(task)
-
-            # Get the length of the body.
-            length_fun_body <- length(fun_body)
-
-            # Insert the expression.
-            fun_body[[length_fun_body + 1]] <- bquote(
-                # The injected expression.
+            # Create the language construct to inject.
+            injection <- bquote(
+                # The injected expression to run after each task execution.
                 on.exit({
                     # Acquire an exclusive lock.
-                    log_lock <- filelock::lock(.(log_lock_path))
+                    log_lock <- filelock::lock(.(paste0(log, ".lock")))
 
                     # Write the line.
                     cat("\n", file = .(log), sep = "", append = TRUE)
@@ -164,11 +167,29 @@ ProgressTrackingContext <- R6::R6Class("ProgressTrackingContext",
                 })
             )
 
-            # Reorder the body.
-            fun_body <- fun_body[c(1, (length_fun_body + 1), 2:length_fun_body)]
+            # Capture the task body.
+            task_body <- body(task)
 
-            # Attach the function body and return it.
-            body(task) <- fun_body
+            # If the body is a call wrapped in a `{` primitive.
+            if (Helper$is_of_class(task_body, "{")) {
+                # Remove the `{` call.
+                task_body <- as.list(task_body)[-1]
+            }
+
+            # Update the body of the task function.
+            body(task) <- as.call(
+                # Coerce the elements to a `list` mode.
+                c(
+                    # Specify the function part.
+                    as.symbol("{"),
+
+                    # Provide the injection.
+                    injection,
+
+                    # The task body.
+                    task_body
+                )
+            )
 
             return(task)
         },
@@ -212,6 +233,27 @@ ProgressTrackingContext <- R6::R6Class("ProgressTrackingContext",
 
             # Close and remove the progress bar.
             private$.bar$terminate()
+        },
+
+        # Template function for tracking progress of backend operations.
+        .execute = function(operation, fun, total) {
+            # Create file for logging progress.
+            log <- private$.make_log()
+
+            # Clear the temporary file on function exit.
+            on.exit({
+                # Remove.
+                unlink(log)
+            })
+
+            # Decorate the task function.
+            fun <- private$.decorate(task = fun, log = log)
+
+            # Evaluate the operation now referencing the decorated task.
+            eval(operation)
+
+            # Show the progress bar and block the main process.
+            private$.show_progress(total = total, log = log)
         }
     ),
 
@@ -265,8 +307,7 @@ ProgressTrackingContext <- R6::R6Class("ProgressTrackingContext",
         #' Run a task on the backend akin to [parallel::parSapply()], but with a
         #' progress bar.
         #'
-        #' @param x A vector (i.e., usually of integers) to pass to the `fun`
-        #' function.
+        #' @param x An atomic vector or list to pass to the `fun` function.
         #'
         #' @param fun A function to apply to each element of `x`.
         #'
@@ -277,23 +318,77 @@ ProgressTrackingContext <- R6::R6Class("ProgressTrackingContext",
         #' stored in the private field `.output` on the [`parabar::Backend`]
         #' abstract class, and is accessible via the `get_output()` method.
         sapply = function(x, fun, ...) {
-            # Create file for logging progress.
-            log <- private$.make_log()
+            # Prepare the backend operation with early evaluated `...`.
+            operation <- bquote(
+                do.call(
+                    super$sapply, c(list(x = .(x), fun = fun), .(list(...)))
+                )
+            )
 
-            # Clear the temporary file on function exit.
-            on.exit({
-                # Remove.
-                unlink(log)
-            })
+            # Execute the task using the desired backend operation.
+            private$.execute(operation = operation, fun = fun, total = length(x))
+        },
 
-            # Decorate task function.
-            task <- private$.decorate(task = fun, log = log)
+        #' @description
+        #' Run a task on the backend akin to [parallel::parLapply()], but with a
+        #' progress bar.
+        #'
+        #' @param x An atomic vector or list to pass to the `fun` function.
+        #'
+        #' @param fun A function to apply to each element of `x`.
+        #'
+        #' @param ... Additional arguments to pass to the `fun` function.
+        #'
+        #' @return
+        #' This method returns void. The output of the task execution must be
+        #' stored in the private field `.output` on the [`parabar::Backend`]
+        #' abstract class, and is accessible via the `get_output()` method.
+        lapply = function(x, fun, ...) {
+            # Prepare the backend operation with early evaluated `...`.
+            operation <- bquote(
+                do.call(
+                    super$lapply, c(list(x = .(x), fun = fun), .(list(...)))
+                )
+            )
 
-            # Execute the decorated task.
-            super$sapply(x = x, fun = task, ...)
+            # Execute the task via the `lapply` backend operation.
+            private$.execute(operation = operation, fun = fun, total = length(x))
+        },
 
-            # Show the progress bar and block the main process.
-            private$.show_progress(total = length(x), log = log)
+        #' @description
+        #' Run a task on the backend akin to [parallel::parApply()].
+        #'
+        #' @param x An array to pass to the `fun` function.
+        #'
+        #' @param margin A numeric vector indicating the dimensions of `x` the
+        #' `fun` function should be applied over. For example, for a matrix,
+        #' `margin = 1` indicates applying `fun` rows-wise, `margin = 2`
+        #' indicates applying `fun` columns-wise, and `margin = c(1, 2)`
+        #' indicates applying `fun` element-wise. Named dimensions are also
+        #' possible depending on `x`. See [parallel::parApply()] and
+        #' [base::apply()] for more details.
+        #'
+        #' @param fun A function to apply to `x` according to the `margin`.
+        #'
+        #' @param ... Additional arguments to pass to the `fun` function.
+        #'
+        #' @return
+        #' This method returns void. The output of the task execution must be
+        #' stored in the private field `.output` on the [`parabar::Backend`]
+        #' abstract class, and is accessible via the `get_output()` method.
+        apply = function(x, margin, fun, ...) {
+            # Determine the number of task executions.
+            total <- prod(dim(x)[margin])
+
+            # Prepare the backend operation with early evaluated `...`.
+            operation <- bquote(
+                do.call(
+                    super$apply, c(list(x = .(x), margin = .(margin), fun = fun), .(list(...)))
+                )
+            )
+
+            # Execute the task via the `lapply` backend operation.
+            private$.execute(operation = operation, fun = fun, total = total)
         }
     ),
 

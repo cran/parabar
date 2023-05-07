@@ -101,8 +101,7 @@ Service <- R6::R6Class("Service",
         #' @description
         #' Run a task on the backend akin to [parallel::parSapply()].
         #'
-        #' @param x A vector (i.e., usually of integers) to pass to the `fun`
-        #' function.
+        #' @param x An atomic vector or list to pass to the `fun` function.
         #'
         #' @param fun A function to apply to each element of `x`.
         #'
@@ -117,7 +116,52 @@ Service <- R6::R6Class("Service",
         },
 
         #' @description
+        #' Run a task on the backend akin to [parallel::parLapply()].
+        #'
+        #' @param x An atomic vector or list to pass to the `fun` function.
+        #'
+        #' @param fun A function to apply to each element of `x`.
+        #'
+        #' @param ... Additional arguments to pass to the `fun` function.
+        #'
+        #' @return
+        #' This method returns void. The output of the task execution must be
+        #' stored in the private field `.output` on the [`parabar::Backend`]
+        #' abstract class, and is accessible via the `get_output()` method.
+        lapply = function(x, fun, ...) {
+            Exception$method_not_implemented()
+        },
+
+        #' @description
+        #' Run a task on the backend akin to [parallel::parApply()].
+        #'
+        #' @param x An array to pass to the `fun` function.
+        #'
+        #' @param margin A numeric vector indicating the dimensions of `x` the
+        #' `fun` function should be applied over. For example, for a matrix,
+        #' `margin = 1` indicates applying `fun` rows-wise, `margin = 2`
+        #' indicates applying `fun` columns-wise, and `margin = c(1, 2)`
+        #' indicates applying `fun` element-wise. Named dimensions are also
+        #' possible depending on `x`. See [parallel::parApply()] and
+        #' [base::apply()] for more details.
+        #'
+        #' @param fun A function to apply to `x` according to the `margin`.
+        #'
+        #' @param ... Additional arguments to pass to the `fun` function.
+        #'
+        #' @return
+        #' This method returns void. The output of the task execution must be
+        #' stored in the private field `.output` on the [`parabar::Backend`]
+        #' abstract class, and is accessible via the `get_output()` method.
+        apply = function(x, margin, fun, ...) {
+            Exception$method_not_implemented()
+        },
+
+        #' @description
         #' Get the output of the task execution.
+        #'
+        #' @param ... Additional optional arguments that may be used by concrete
+        #' implementations.
         #'
         #' @details
         #' This method fetches the output of the task execution after calling
@@ -126,12 +170,11 @@ Service <- R6::R6Class("Service",
         #' not advised. This method should be called after the execution of a
         #' task.
         #'
-        #' @param ... Additional optional arguments that may be used by concrete
-        #' implementations.
-        #'
         #' @return
-        #' A vector or list of the same length as `x` containing the results of
-        #' the `fun`. It resembles the format of [base::sapply()].
+        #' A vector, matrix, or list of the same length as `x`, containing the
+        #' results of the `fun`. The output format differs based on the specific
+        #' operation employed. Check out the documentation for the `apply`
+        #' operations of [`parallel::parallel`] for more information.
         get_output = function(...) {
             Exception$method_not_implemented()
         }

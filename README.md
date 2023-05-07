@@ -270,6 +270,7 @@ can be performed on a backend.
 | <code><a href="https://parabar.mihaiconstantin.com/reference/export.html">export(backend, variables, environment)</a></code> | Export objects to a backend.                  |
 | <code><a href="https://parabar.mihaiconstantin.com/reference/evaluate.html">evaluate(backend, expression)</a></code>         | Evaluate expressions on a backend.            |
 | <code><a href="https://parabar.mihaiconstantin.com/reference/par_sapply.html">par_sapply(backend, x, fun)</a></code>         | Run tasks in parallel on a backend.           |
+| <code><a href="https://parabar.mihaiconstantin.com/reference/par_lapply.html">par_lapply(backend, x, fun)</a></code>         | Run tasks in parallel on a backend.           |
 
 Check the documentation corresponding to each operation for more information and
 examples.
@@ -298,6 +299,7 @@ The `?Service` interface defines the following operations:
 - `export`: Export variables from a given environment to the backend.
 - `evaluate`: Evaluate an arbitrary expression on the backend.
 - `sapply`: Run a task on the backend.
+- `lapply`: Run a task on the backend.
 - `get_output`: Get the output of the task execution.
 
 Check out the documentation for `Service` for more information on each method.
@@ -369,8 +371,8 @@ backend <- backend_factory$get("async")
 backend$start(specification)
 ```
 
-Finally, we can run a task in parallel by calling the `sapply` method on the
-`backend` instance.
+Finally, we can run a task in parallel by calling, e.g., the `sapply` method on
+the `backend` instance.
 
 ```r
 # Run a task in parallel.
@@ -484,6 +486,10 @@ Check out the UML diagram below for a quick overview of the package design.
     </a>
 </p>
 
+**_Note._** For the sake of clarity, the diagram only displays the `sapply`
+operation for running tasks in parallel. However, other operations are supported
+as well (i.e., see table in the section *Additional Operations*).
+
 ## Contributing
 - Any contributions are welcome and greatly appreciated. Please open a [pull
   request](https://github.com/mihaiconstantin/parabar/pulls) on `GitHub`.
@@ -493,4 +499,4 @@ Check out the UML diagram below for a quick overview of the package design.
 ## License
 - The package source code in this repository is licensed under the [MIT
   license](https://opensource.org/license/mit/).
-- <p xmlns:cc="https://creativecommons.org/ns#" xmlns:dct="https://purl.org/dc/terms/"><a property="dct:title" rel="cc:attributionURL" href="https://parabar.mihaiconstantin.com">The documentation, vignettes, and other website materials</a> by <a rel="cc:attributionURL dct:creator" property="cc:attributionName" href="https://mihaiconstantin.com">Mihai Constantin</a> are licensed under <a href="https://creativecommons.org/licenses/by/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">CC BY 4.0<img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1"></a>.</p>
+- <p class="license-cc" xmlns:cc="https://creativecommons.org/ns#" xmlns:dct="https://purl.org/dc/terms/"><a property="dct:title" rel="cc:attributionURL" href="https://parabar.mihaiconstantin.com">The documentation, vignettes, and other website materials</a> by <a rel="cc:attributionURL dct:creator" property="cc:attributionName" href="https://mihaiconstantin.com">Mihai Constantin</a> are licensed under <a href="https://creativecommons.org/licenses/by/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">CC BY 4.0 <img style="height:22px!important" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1"> <img style="height:22px!important" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1"></a>.</p>
