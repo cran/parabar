@@ -82,6 +82,9 @@ context$stop()
 \code{\link{ProgressTrackingContext}}, \code{\link{Service}},
 \code{\link{Backend}}, and \code{\link{SyncBackend}}.
 }
+\section{Super class}{
+\code{\link[parabar:Service]{parabar::Service}} -> \code{Context}
+}
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
@@ -93,6 +96,7 @@ context.}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
+\item \href{#method-Context-new}{\code{Context$new()}}
 \item \href{#method-Context-set_backend}{\code{Context$set_backend()}}
 \item \href{#method-Context-start}{\code{Context$start()}}
 \item \href{#method-Context-stop}{\code{Context$stop()}}
@@ -105,6 +109,19 @@ context.}
 \item \href{#method-Context-apply}{\code{Context$apply()}}
 \item \href{#method-Context-get_output}{\code{Context$get_output()}}
 \item \href{#method-Context-clone}{\code{Context$clone()}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Context-new"></a>}}
+\if{latex}{\out{\hypertarget{method-Context-new}{}}}
+\subsection{Method \code{new()}}{
+Create a new \code{\link{Context}} object.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Context$new()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+An object of class \code{\link{Context}}.
 }
 }
 \if{html}{\out{<hr>}}

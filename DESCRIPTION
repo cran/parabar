@@ -1,6 +1,6 @@
 Package: parabar
 Title: Progress Bar for Parallel Tasks
-Version: 1.1.1
+Version: 1.2.1
 Authors@R: 
     person(given = "Mihai",
            family = "Constantin",
@@ -14,19 +14,19 @@ URL: https://parabar.mihaiconstantin.com
 BugReports: https://github.com/mihaiconstantin/parabar/issues
 Imports: R6, progress, parallel, callr, filelock, utils
 Encoding: UTF-8
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Collate: 'TaskState.R' 'Options.R' 'Helper.R' 'Exception.R'
         'Specification.R' 'Service.R' 'Backend.R' 'AsyncBackend.R'
         'SyncBackend.R' 'BackendFactory.R' 'Bar.R' 'ModernBar.R'
         'BasicBar.R' 'BarFactory.R' 'Context.R'
         'ProgressTrackingContext.R' 'ContextFactory.R' 'Warning.R'
-        'UserApiConsumer.R' 'exports.r' 'logo.R' 'parabar-package.R'
+        'UserApiConsumer.R' 'exports.R' 'logo.R' 'parabar-package.R'
 Suggests: knitr, rmarkdown, testthat (>= 3.0.0)
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2024-02-05 22:06:25 UTC; mihai
+Packaged: 2024-10-17 06:45:11 UTC; mihai
 Author: Mihai Constantin [aut, cre] (<https://orcid.org/0000-0002-6460-0107>)
 Maintainer: Mihai Constantin <mihai@mihaiconstantin.com>
 Repository: CRAN
-Date/Publication: 2024-02-05 22:40:02 UTC
+Date/Publication: 2024-10-17 07:10:03 UTC

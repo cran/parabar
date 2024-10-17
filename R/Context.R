@@ -83,12 +83,21 @@
 #'
 #' @export
 Context <- R6::R6Class("Context",
+    inherit = Service,
+
     private = list(
         # The backend used by the context manager.
         .backend = NULL
     ),
 
     public = list(
+        #' @description
+        #' Create a new [`parabar::Context`] object.
+        #'
+        #' @return
+        #' An object of class [`parabar::Context`].
+        initialize = function() { invisible() },
+
         #' @description
         #' Set the backend instance to be used by the context.
         #'
@@ -188,7 +197,7 @@ Context <- R6::R6Class("Context",
         },
 
         #' @description
-        #' Run a task on the backend akin to [parallel::parSapply()].
+        #' Run a task on the backend akin to [`parallel::parSapply()`].
         #'
         #' @param x An atomic vector or list to pass to the `fun` function.
         #'
@@ -206,7 +215,7 @@ Context <- R6::R6Class("Context",
         },
 
         #' @description
-        #' Run a task on the backend akin to [parallel::parLapply()].
+        #' Run a task on the backend akin to [`parallel::parLapply()`].
         #'
         #' @param x An atomic vector or list to pass to the `fun` function.
         #'
@@ -224,7 +233,7 @@ Context <- R6::R6Class("Context",
         },
 
         #' @description
-        #' Run a task on the backend akin to [parallel::parApply()].
+        #' Run a task on the backend akin to [`parallel::parApply()`].
         #'
         #' @param x An array to pass to the `fun` function.
         #'
@@ -233,8 +242,8 @@ Context <- R6::R6Class("Context",
         #' `margin = 1` indicates applying `fun` rows-wise, `margin = 2`
         #' indicates applying `fun` columns-wise, and `margin = c(1, 2)`
         #' indicates applying `fun` element-wise. Named dimensions are also
-        #' possible depending on `x`. See [parallel::parApply()] and
-        #' [base::apply()] for more details.
+        #' possible depending on `x`. See [`parallel::parApply()`] and
+        #' [`base::apply()`] for more details.
         #'
         #' @param fun A function to apply to `x` according to the `margin`.
         #'
