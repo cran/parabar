@@ -80,8 +80,8 @@ Options <- R6::R6Class("Options",
         progress_track = TRUE,
 
         #' @field progress_timeout A numeric value indicating the timeout (i.e.,
-        #' in seconds) between subsequent checks of the log file for new progress
-        #' records. The default value is `0.001`.
+        #' in seconds) between subsequent checks of the log file for new
+        #' progress records. The default value is `0.001`.
         progress_timeout = 0.001,
 
         #' @field progress_wait A numeric value indicating the approximate
@@ -114,7 +114,14 @@ Options <- R6::R6Class("Options",
 
             # See `utils::txtProgressBar`.
             basic = list()
-        )
+        ),
+
+        #' @field stop_forceful A logical value indicating whether to allow
+        #' stopping an asynchronous backend forcefully (i.e., `TRUE`), or not
+        #' (i.e., `FALSE`). When stopping forcefully, the backend is terminated
+        #' without waiting for a running tasks to finish or for the results to
+        #' be read into the main `R` session. The default value is `FALSE`.
+        stop_forceful = FALSE
     ),
 
     active = list(

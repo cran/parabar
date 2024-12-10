@@ -5,9 +5,9 @@
 \title{SyncBackend}
 \description{
 This is a concrete implementation of the abstract class \code{\link{Backend}}
-that implements the \code{\link{Service}} interface. This backend executes
-tasks in parallel on a \code{\link[parallel:makeCluster]{parallel::makeCluster()}} cluster synchronously (i.e.,
-blocking the main \code{R} session).
+that implements the \code{\link{BackendService}} interface. This backend
+executes tasks in parallel on a \code{\link[parallel:makeCluster]{parallel::makeCluster()}} cluster
+synchronously (i.e., blocking the main \code{R} session).
 }
 \examples{
 # Create a specification object.
@@ -75,17 +75,16 @@ backend$active
 
 }
 \seealso{
-\code{\link{Service}}, \code{\link{Backend}}, \code{\link{AsyncBackend}}, and
-\code{\link{Context}}.
+\code{\link{BackendService}}, \code{\link{Backend}}, \code{\link{AsyncBackend}},
+and \code{\link{Context}}.
 }
 \section{Super classes}{
-\code{\link[parabar:Service]{parabar::Service}} -> \code{\link[parabar:Backend]{parabar::Backend}} -> \code{SyncBackend}
+\code{\link[parabar:BackendService]{parabar::BackendService}} -> \code{\link[parabar:Backend]{parabar::Backend}} -> \code{SyncBackend}
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-SyncBackend-new}{\code{SyncBackend$new()}}
-\item \href{#method-SyncBackend-finalize}{\code{SyncBackend$finalize()}}
 \item \href{#method-SyncBackend-start}{\code{SyncBackend$start()}}
 \item \href{#method-SyncBackend-stop}{\code{SyncBackend$stop()}}
 \item \href{#method-SyncBackend-clear}{\code{SyncBackend$clear()}}
@@ -106,19 +105,6 @@ backend$active
 Create a new \code{\link{SyncBackend}} object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{SyncBackend$new()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-An object of class \code{\link{SyncBackend}}.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-SyncBackend-finalize"></a>}}
-\if{latex}{\out{\hypertarget{method-SyncBackend-finalize}{}}}
-\subsection{Method \code{finalize()}}{
-Destroy the current \code{\link{SyncBackend}} instance.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{SyncBackend$finalize()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{

@@ -57,7 +57,7 @@ test_task <- function(x, y, z, sleep = 0) {
 # Check if a task is running on an asynchronous backend, or context.
 task_is_running <- function(backend) {
     # If a context is passed.
-    if (Helper$get_class_name(backend) == "Context") {
+    if ("Context" %in% class(backend)) {
         # Get the status via the context.
         status <- backend$backend$task_state$task_is_running
     } else {
@@ -80,12 +80,25 @@ body_contains <- function(task, pattern, position = 2) {
     return(contains)
 }
 
+
+# Block the main session until an asynchronous task finishes execution.
+block_until_async_task_finished <- function(backend) {
+    # Block the main session until the task is finished.
+    while (task_is_running(backend)) {
+        # Sleep a bit.
+        Sys.sleep(0.001)
+    }
+
+    # Remain silent.
+    invisible(NULL)
+}
+
 #endregion
 
 
 #region Tests sets applicable to all backends types.
 
-# Set of tests for unimplemented service methods.
+# Set of tests for unimplemented backend service methods.
 tests_set_for_unimplemented_service_methods <- function(service) {
     # Expect an error when calling the `start` method.
     expect_error(service$start(), as_text(Exception$method_not_implemented()))
@@ -354,10 +367,7 @@ tests_set_for_asynchronous_backend_task_execution <- function(operation, service
     expect_error(service$get_output(), as_text(Exception$async_task_running()))
 
     # Block the main thread until the task is finished.
-    while(task_is_running(service)) {
-        # Sleep a bit.
-        Sys.sleep(0.001)
-    }
+    block_until_async_task_finished(service)
 
     # Expect that trying to run a task without reading the previous output fails.
     expect_error(eval(operation), as_text(Exception$async_task_completed()))
@@ -697,7 +707,7 @@ tests_set_for_progress_tracking_context_with_error <- function(context) {
         Sys.sleep(sleep)
 
         # Randomly sample when to throw an error.
-        if(any(x == error_x)) {
+        if (any(x == error_x)) {
             # Throw an error.
             stop("Intentional task error.")
         }
@@ -879,8 +889,14 @@ tests_set_for_user_api_progress_tracking <- function(operation) {
         clear = FALSE
     )
 
-    # Redirect output.
-    sink("/dev/null", type = "output")
+    # Redirect output accordingly.
+    if (.Platform$OS.type == "windows") {
+        # Redirect output to `nul`.
+        sink("nul", type = "output")
+    } else {
+        # Redirect output to `/dev/null`.
+        sink("/dev/null", type = "output")
+    }
 
     # Run the task and capture the progress bar output.
     output <- capture.output({ eval(operation) }, type = "message")
@@ -943,9 +959,9 @@ SpecificationTester <- R6::R6Class("SpecificationTester",
 )
 
 
-# Helper for testing method implementations of `Service` interface.
-ServiceImplementation <- R6::R6Class("ServiceImplementation",
-    inherit = Service,
+# Helper for testing method implementations of `BackendService` interface.
+BackendServiceImplementation <- R6::R6Class("BackendServiceImplementation",
+    inherit = BackendService,
 
     public = list(
         # Allow instantiation.

@@ -77,8 +77,8 @@ tracking should be enabled (i.e., \code{TRUE}) or disabled  (i.e.,
 \code{TRUE}.}
 
 \item{\code{progress_timeout}}{A numeric value indicating the timeout (i.e.,
-in seconds) between subsequent checks of the log file for new progress
-records. The default value is \code{0.001}.}
+in seconds) between subsequent checks of the log file for new
+progress records. The default value is \code{0.001}.}
 
 \item{\code{progress_wait}}{A numeric value indicating the approximate
 duration (i.e., in seconds) to wait between progress bar updates
@@ -103,6 +103,12 @@ default configuration:
 \item \code{basic}: The \code{\link[utils:txtProgressBar]{utils::txtProgressBar}} engine, with no default
 configuration.
 }}
+
+\item{\code{stop_forceful}}{A logical value indicating whether to allow
+stopping an asynchronous backend forcefully (i.e., \code{TRUE}), or not
+(i.e., \code{FALSE}). When stopping forcefully, the backend is terminated
+without waiting for a running tasks to finish or for the results to
+be read into the main \code{R} session. The default value is \code{FALSE}.}
 }
 \if{html}{\out{</div>}}
 }

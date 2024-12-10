@@ -5,10 +5,10 @@
 #'
 #' @description
 #' This is a concrete implementation of the abstract class [`parabar::Backend`]
-#' that implements the [`parabar::Service`] interface. This backend executes
-#' tasks in parallel asynchronously (i.e., without blocking the main `R`
-#' session) on a [parallel::makeCluster()] cluster created in a background `R`
-#' [`session`][`callr::r_session`].
+#' that implements the [`parabar::BackendService`] interface. This backend
+#' executes tasks in parallel asynchronously (i.e., without blocking the main
+#' `R` session) on a [parallel::makeCluster()] cluster created in a background
+#' `R` [`session`][`callr::r_session`].
 #'
 #' @examples
 #' # Create a specification object.
@@ -83,7 +83,7 @@
 #' backend$active
 #'
 #' @seealso
-#' [`parabar::Service`], [`parabar::Backend`], [`parabar::SyncBackend`],
+#' [`parabar::BackendService`], [`parabar::Backend`], [`parabar::SyncBackend`],
 #' [`parabar::ProgressTrackingContext`], and [`parabar::TaskState`].
 #'
 #' @export
@@ -143,11 +143,29 @@ AsyncBackend <- R6::R6Class("AsyncBackend",
                 Exception$cluster_not_active()
             }
 
-            # Terminate the cluster in the separate `R` session.
-            private$.close_cluster()
+            # Get the session state.
+            state <- private$.get_session_state()
 
-            # Terminate the separate `R` session.
-            private$.cluster$close()
+            # Get the user's intent for stopping the backend forcefully.
+            stop_forceful <- Helper$get_option("stop_forceful")
+
+            # If the session is busy and forceful stop is not allowed.
+            if(state$session_is_busy && !stop_forceful) {
+                # Throw.
+                Exception$stop_busy_backend_not_allowed()
+            }
+
+            # If the session is idle.
+            if (state$session_is_idle) {
+                # Gracefully terminate the cluster in the separate `R` session.
+                private$.close_cluster()
+            }
+
+            # If the session is not already finished.
+            if (!state$session_is_finished) {
+                # Terminate the separate `R` session.
+                private$.cluster$close()
+            }
 
             # Rest the cluster field.
             private$.cluster <- NULL
@@ -266,7 +284,7 @@ AsyncBackend <- R6::R6Class("AsyncBackend",
             # Get all session output.
             output <- private$.cluster$read()
 
-            # If an error ocurred in the session.
+            # If an error occurred in the session.
             if (!is.null(output$error)) {
                 # Throw error in the main session.
                 Exception$async_task_error(output$error)
@@ -287,7 +305,23 @@ AsyncBackend <- R6::R6Class("AsyncBackend",
             # Create task state object holding the current state.
             task_state <- TaskState$new(private$.cluster)
 
+            # Return the task state.
             return(task_state)
+        },
+
+        # Get the session state.
+        .get_session_state = function() {
+            # If the backend does not have an active cluster (i.e., session in this case).
+            if (!private$.active) {
+                # Throw.
+                Exception$cluster_not_active()
+            }
+
+            # Create session state object holding the current state.
+            session_state <- SessionState$new(private$.cluster)
+
+            # Return the session state.
+            return(session_state)
         },
 
         # Throw an exception if the backend is not ready to be used.
@@ -363,19 +397,6 @@ AsyncBackend <- R6::R6Class("AsyncBackend",
         #' @return
         #' An object of class [`parabar::AsyncBackend`].
         initialize = function() { invisible() },
-
-        #' @description
-        #' Destroy the current [`parabar::AsyncBackend`] instance.
-        #'
-        #' @return
-        #' An object of class [`parabar::AsyncBackend`].
-        finalize = function() {
-            # If a cluster is active, stop before deleting the instance.
-            if (private$.active) {
-                # Stop the cluster.
-                private$.stop()
-            }
-        },
 
         #' @description
         #' Start the backend.
@@ -606,6 +627,29 @@ AsyncBackend <- R6::R6Class("AsyncBackend",
                 task_not_started = task_state$task_not_started,
                 task_is_running = task_state$task_is_running,
                 task_is_completed = task_state$task_is_completed
+            ))
+        },
+
+        #' @field session_state A list of logical values indicating the state of
+        #' the background session managing the cluster. See the
+        #' [`parabar::SessionState`] class for more information on the available
+        #' statuses. The following statuses are available:
+        #' - `session_is_starting`: Indicates whether the session is starting.
+        #' - `session_is_idle`: Indicates whether the session is idle.
+        #' - `session_is_busy`: Indicates whether the session is busy. A session
+        #'   is busy when a task is running or when the output of a task has not
+        #'   been fetched into the main `R` session. See the `task_state` field.
+        #' - `session_is_finished`: Indicates whether the session was closed.
+        session_state = function() {
+            # Get a session state instance with the state.
+            session_state <- private$.get_session_state()
+
+            # Return a simplified state.
+            return(list(
+                session_is_starting = session_state$session_is_starting,
+                session_is_idle = session_state$session_is_idle,
+                session_is_busy = session_state$session_is_busy,
+                session_is_finished = session_state$session_is_finished
             ))
         }
     )
