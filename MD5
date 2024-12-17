@@ -1,7 +1,7 @@
-0c6d300c503a7fe1e2b964d6bcb92b72 *DESCRIPTION
+b1c1799891fad76eeff9f31c2da4a04f *DESCRIPTION
 3c4feb9248cd2f0f61f3a66cb46070e7 *LICENSE
 b640a3e9881079542049ef0adcec3009 *NAMESPACE
-4c1ee0fb1986bee2c61ae91eb5175202 *NEWS.md
+06f2fa18ed858937f3f20b18a96542ec *NEWS.md
 5e84fed445f14e935f33826037fc4734 *R/AsyncBackend.R
 aed07a09a78fa468b6b86a6de370012e *R/Backend.R
 716625b52d10d5f47d8fad853568a6cd *R/BackendFactory.R
@@ -25,11 +25,13 @@ b94dc532df450d6b9ea04f3160c8cdbd *R/Warning.R
 af68be9b1d3742ac5293be0ceeefb255 *R/exports.R
 40077983b1a2999b1804f275b1054bd9 *R/logo.R
 c9f71a34bebee2941437c2014b6c83e9 *R/parabar-package.R
-2fdea89b4f5a9443f4cbbbefa613fc29 *README.md
-30817d3d9b7695a0c2e6bbd23dbe3591 *build/vignette.rds
+1509665a77e16a63cb34d1fe05cdf449 *README.md
+065c6be50a8f929612072e5a4a8f53e8 *build/vignette.rds
 fcebd5602df3e900f3b868821e31a504 *inst/assets/logo/parabar-logo.txt
 4629e80c3ba188ead1528c010b25d3c7 *inst/doc/comparison.Rmd
 6f01afc7e4d5134a09b0a3e36f685246 *inst/doc/comparison.html
+cae0098c63395e2f4a6ba8e88fba7c98 *inst/doc/foreach.Rmd
+87abc790a68993a1601f9ebe1571adc0 *inst/doc/foreach.html
 6293603cfc51e91d804ed6ddbfad3fe1 *man/AsyncBackend.Rd
 275bb3839ac12529e0df11bce951d2f2 *man/Backend.Rd
 b4ed944973f63c6683d8ebe6480f47f7 *man/BackendFactory.Rd
@@ -87,3 +89,4 @@ b99ac577e2b6e60e49d5480a12242224 *tests/testthat/test-package-setup.R
 f35e13f1e10e8d1719229be03b1f3f5f *tests/testthat/test-user-api.R
 9768edfaf8f411e66e8caa6b643afd0d *vignettes/comparison-benchmarks-1.png
 4629e80c3ba188ead1528c010b25d3c7 *vignettes/comparison.Rmd
+cae0098c63395e2f4a6ba8e88fba7c98 *vignettes/foreach.Rmd

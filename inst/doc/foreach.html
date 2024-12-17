@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Mihai Constantin" />
+
+
+<title>Using parabar with foreach</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Using <code>parabar</code> with
+<code>foreach</code></h1>
+<h4 class="author">Mihai Constantin</h4>
+<h4 class="date">16 December, 2024</h4>
+
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>The goal of this article is to provide a minimal example of how to
+use the <a href="https://parabar.mihaiconstantin.com"><code>parabar</code></a> and
+<a href="https://CRAN.R-project.org/package=foreach"><code>foreach</code></a>
+packages together. The <code>foreach</code> package is a popular package
+that provides syntactic sugar for executing tasks sequentially (i.e.,
+via the <code>%do%</code> operator) or in parallel (i.e., via the
+<code>%dopar%</code> operator). In this article, I will provide a brief
+introduction to the <code>foreach</code> package and show how it can be
+used to run tasks in parallel with the <code>parabar</code> package. If
+you are not yet familiar with the <code>parabar</code> package, make
+sure to check out the <a href="https://parabar.mihaiconstantin.com">documentation</a> for
+information on how to get started.</p>
+</div>
+<div id="overview" class="section level2">
+<h2>Overview</h2>
+<p>In a nutshell, the <code>foreach</code> package provides a way to
+iterate over a collection of elements. For iterating over the respective
+collection sequentially, one can use the <code>%do%</code> operator as
+follows:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Load the library.</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(foreach)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co"># For each element.</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">foreach</span>(<span class="at">i =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>) <span class="sc">%do%</span> {</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>    <span class="co"># Do something.</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>    i <span class="sc">*</span> <span class="dv">2</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>}</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">#&gt; [1] 2</span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt;</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co">#&gt; [[2]]</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co">#&gt; [1] 4</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co">#&gt;</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co">#&gt; [[3]]</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co">#&gt; [1] 6</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="co">#&gt;</span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="co">#&gt; [[4]]</span></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co">#&gt; [1] 8</span></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co">#&gt;</span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="co">#&gt; [[5]]</span></span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="co">#&gt; [1] 10</span></span></code></pre></div>
+<p>In this example, the line</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Load the library.</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">library</span>(foreach)</span></code></pre></div>
+<p>loads the <code>foreach</code> package, making all of its functions
+and operators available in main session. More interestingly, the
+call</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">foreach</span>(<span class="at">i =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)</span></code></pre></div>
+<p>takes the named argument <code>i = 1:5</code> provided as input and
+returns an iterator object of class <code>foreach</code>. Then, the
+<code>%do%</code> operator is used to execute the expression on the
+right-hand side of the operator</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>{</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>    <span class="co"># Do something.</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>    i <span class="sc">*</span> <span class="dv">2</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>}</span></code></pre></div>
+<p>for each element of the iterator object.</p>
+<p><em>Note.</em> The <code>foreach::foreach</code> function may take
+additional arguments that control the behavior of the iteration process,
+accumulation of the results, and the task execution. For example, by
+default, the <code>foreach::foreach</code> function returns the
+accumulated results as a list. However, the
+<code>foreach::foreach</code> can take a <code>.combine</code> argument
+that specifies how the results of each iteration should be combined into
+a single object. Specifying, for instance, <code>.combine = c</code> for
+the example above instructs <code>foreach::foreach</code> that we expect
+the results back as a vector instead of a list:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># For each element.</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">foreach</span>(<span class="at">i =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">.combine =</span> c) <span class="sc">%do%</span> {</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>    <span class="co"># Do something.</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    i <span class="sc">*</span> <span class="dv">2</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>}</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">#&gt; [1]  2  4  6  8 10</span></span></code></pre></div>
+<p>Moreover, using the <code>.final</code> argument, we can provide a
+function that acts on the accumulated results right before their are
+provided back to the user. This is useful when we want to perform some
+final operation on the results before returning them. For example,
+suppose we want to sum the results of the iterations. We can do this as
+follows:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># For each element.</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">foreach</span>(<span class="at">i =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">.combine =</span> c, <span class="at">.final =</span> sum) <span class="sc">%do%</span> {</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>    <span class="co"># Do something.</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>    i <span class="sc">*</span> <span class="dv">2</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>}</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt; [1] 30</span></span></code></pre></div>
+<p>As you may have noticed, the arguments that pertain to the behavior
+of the <code>foreach::foreach</code> function are prepended with a dot.
+There are more arguments available. For a complete list, see the
+documentation for <code>foreach::foreach</code> and the vignette <a href="https://CRAN.R-project.org/package=foreach/vignettes/foreach.html"><em>Using
+the <code>foreach</code> package</em></a>.</p>
+</div>
+<div id="running-in-parallel" class="section level2">
+<h2>Running In Parallel</h2>
+<p>If we want to run a task in parallel, we need to provide a backend
+that supports parallelizing the task. Since the <code>foreach</code>
+package is not a parallelization package per se, it does not provide a
+backend for parallelizing tasks by default. Instead, it provides a
+flexible mechanism to register any parallelization backend with it, as
+long as that backend supports the <code>%dopar%</code> operator.</p>
+<p>The workflow for running a task in parallel with the
+<code>foreach</code> package involves:</p>
+<ol style="list-style-type: decimal">
+<li>Obtaining a parallelization backend.</li>
+<li>Registering the backend with the <code>foreach</code> package.</li>
+<li>Running the task in parallel using the <code>%dopar%</code>
+operator.</li>
+</ol>
+<p>While the <code>parabar</code> package provides <a href="https://parabar.mihaiconstantin.com/reference/SyncBackend">synchronous</a>
+and <a href="https://parabar.mihaiconstantin.com/reference/AsyncBackend">asynchronous</a>
+parallelization backends, it does not work out of the box with the
+<code>foreach</code> package. This is where the <a href="https://github.com/mihaiconstantin/doParabar"><code>doParabar</code></a>
+package comes into play. The <code>doParabar</code> encapsulated the
+necessary logic to adapt <code>parabar</code> backends to work
+seamlessly with the <code>foreach</code> package.</p>
+<p>At a high level the <code>doParabar</code> package consists of two
+main functions:</p>
+<ul>
+<li><a href="https://github.com/mihaiconstantin/doParabar/blob/main/R/doPar.R"><code>doPar</code></a>:
+provides an implementation for the <code>%dopar%</code> operator (e.g.,
+think of it as an adapter that connects the <code>foreach</code> and
+<code>parabar</code> packages). This function implements the various
+arguments of the <code>foreach::foreach</code> function and determines
+how the tasks are parallelized using a <code>parabar</code>
+backend.</li>
+<li><a href="https://github.com/mihaiconstantin/doParabar/blob/main/R/registerDoParabar.R"><code>registerDoParabar</code></a>:
+registers the <code>doPar</code> implementation with the
+<code>foreach</code> package. This function sets up the necessary hooks
+in the <code>foreach</code> package to use the <code>doPar</code>
+implementation for the <code>%dopar%</code> operator. In other words, it
+tells <code>foreach</code> that as long as a <code>parabar</code>
+backend is registered, it should use the <code>doPar</code>
+implementation in <code>doParabar</code> for the <code>%dopar%</code>
+operator.</li>
+</ul>
+<p><em>Note.</em> Two particularly relevant
+<code>foreach::foreach</code> arguments in the context of parallelizing
+<code>R</code> code are <code>.export</code> and <code>.packages</code>.
+The <code>.export</code> argument specifies the variables that need to
+be exported to the backend, while the <code>packages</code> argument
+specifies the packages that need to be loaded on the backend.</p>
+</div>
+<div id="using-doparabar" class="section level2">
+<h2>Using <code>doParabar</code></h2>
+<p>Unlike other <code>foreach</code> adapter packages out there (e.g.,
+<code>doParallel</code>), the the <code>doParabar</code> package does
+not automatically load other packages. Instead, I recommend to
+explicitly load the necessary packages in your scripts. In a similar
+vein, <code>R</code> package developers should add the necessary
+packages to the <code>Imports</code> field in the
+<code>DESCRIPTION</code> file of their package. Therefore, the first
+step in using <code>parabar</code> with <code>foreach</code> is to load
+the necessary packages:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Load the packages.</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">library</span>(doParabar)</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="fu">library</span>(parabar)</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="fu">library</span>(foreach)</span></code></pre></div>
+<p>Next, we proceed by using <code>parabar</code> to create an <a href="https://parabar.mihaiconstantin.com/reference/AsyncBackend">asynchronous</a>
+parallelization backend that supports progress tracking as follows:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Create an asynchronous `parabar` backend.</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>backend <span class="ot">&lt;-</span> <span class="fu">start_backend</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>    <span class="at">cores =</span> <span class="dv">2</span>, <span class="at">cluster_type =</span> <span class="st">&quot;psock&quot;</span>, <span class="at">backend_type =</span> <span class="st">&quot;async&quot;</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>)</span></code></pre></div>
+<p>At this point, we have a parallelization backend that we can register
+with the <code>foreach</code> package. We do this via the
+<code>registerDoParabar</code> function:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Register the backend with the `foreach` package.</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="fu">registerDoParabar</span>(backend)</span></code></pre></div>
+<p>To verify that the backend has been registered successfully, we can
+use some of the function provides by the <code>foreach</code> package to
+query information about the backend:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Get the parallel backend name.</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="fu">getDoParName</span>()</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="co">#&gt; [1] &quot;doParabar (AsyncBackend)&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Check that the parallel backend has been registered.</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="fu">getDoParRegistered</span>()</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># Get the current version of backend registration.</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="fu">getDoParVersion</span>()</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co">#&gt; [1] &quot;1.0.0&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co"># Get the number of cores used by the backend.</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="fu">getDoParWorkers</span>()</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="co">#&gt; [1] 2</span></span></code></pre></div>
+<p>Now, we can use the <code>%dopar%</code> operator to run tasks in
+parallel. For example:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># Define some variables strangers to the backend.</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="st">&quot;Not to be exported.&quot;</span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a><span class="co"># Used the registered backend to run a task in parallel via `foreach`.</span></span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">foreach</span>(</span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a>    <span class="at">i =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">300</span>, <span class="at">.export =</span> <span class="fu">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>), <span class="at">.combine =</span> c</span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a>) <span class="sc">%dopar%</span> {</span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a>    <span class="co"># Sleep a bit to simulate a long-running task.</span></span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a>    <span class="fu">Sys.sleep</span>(<span class="fl">0.01</span>)</span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a></span>
+<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a>    <span class="co"># Compute and return.</span></span>
+<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a>    i <span class="sc">+</span> x <span class="sc">+</span> y</span>
+<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a>}</span>
+<span id="cb14-16"><a href="#cb14-16" tabindex="-1"></a><span class="co">#&gt; completed 0 out of 300 tasks [ 0%] [ 0s]</span></span>
+<span id="cb14-17"><a href="#cb14-17" tabindex="-1"></a><span class="co">#&gt; ...</span></span>
+<span id="cb14-18"><a href="#cb14-18" tabindex="-1"></a><span class="co">#&gt; completed 60 out of 300 tasks [ 20%] [ 1s]</span></span>
+<span id="cb14-19"><a href="#cb14-19" tabindex="-1"></a><span class="co">#&gt; ...</span></span>
+<span id="cb14-20"><a href="#cb14-20" tabindex="-1"></a><span class="co">#&gt; completed 300 out of 300 tasks [100%] [ 2s]</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co"># Show a few results.</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="fu">head</span>(results, <span class="at">n =</span> <span class="dv">10</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="co">#&gt;  [1] 111 112 113 114 115 116 117 118 119 120</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">tail</span>(results, <span class="at">n =</span> <span class="dv">10</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="co">#&gt;  [1] 401 402 403 404 405 406 407 408 409 410</span></span></code></pre></div>
+<p><em>Note.</em> The <code>doParabar</code> package does not
+automatically export objects (i.e., or packages for that manner) to the
+backend. While this break “tradition” with other <code>foreach</code>
+adapter packages, it is a deliberate design choice made to encourage
+users to keep their scripts tidy and be mindful of what they export to
+the backend. (i.e., see the <code>.export</code>,
+<code>.noexport</code>, and <code>.packages</code> arguments of the
+<code>foreach</code> function).</p>
+<p>We can verify that objects are not automatically exported to the
+backend by checking the value of the <code>z</code> variable on the
+backend. We expect this call to throw an error, since <code>z</code> was
+never exported to the backend:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="co"># Verify that the variable `z` was not exported.</span></span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="fu">try</span>(<span class="fu">evaluate</span>(backend, z))</span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="co">#&gt; Error : ! in callr subprocess.</span></span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="co">#&gt; Caused by error in `checkForRemoteErrors(lapply(cl, recvResult))`:</span></span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a><span class="co">#&gt; ! 2 nodes produced errors; first error: object &#39;z&#39; not found</span></span></code></pre></div>
+<p>Finally, we can stop the backend when we are done with as we would
+normally do:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="co"># Stop the backend.</span></span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a><span class="fu">stop_backend</span>(backend)</span></code></pre></div>
+</div>
+<div id="conclusion" class="section level2">
+<h2>Conclusion</h2>
+<p>In this article, I provided a short introduction on how to run tasks
+in parallel on <a href="https://parabar.mihaiconstantin.com"><code>parabar</code></a>
+backends using <a href="https://CRAN.R-project.org/package=foreach"><code>foreach</code></a>
+semantics. This integration is possible via the <a href="https://github.com/mihaiconstantin/doParabar"><code>doParabar</code></a>
+package, which provides an implementation for the <code>%dopar%</code>
+operator (i.e., the <code>doPar</code> function) and a function to
+register the implementation with the <code>foreach</code> package (i.e.,
+the <code>registerDoParabar</code> function). The source code for the
+<code>doParabar</code> package can be consulted on <code>GitHub</code>
+at <a href="https://github.com/mihaiconstantin/doParabar">github.com/mihaiconstantin/doParabar</a>.
+I kindly welcome any feedback or contributions to improving
+<code>parabar</code> or <code>doParabar</code>.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
